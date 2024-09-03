@@ -1,0 +1,34 @@
+<!doctype html>
+<html lang='en'>
+<head>
+  <meta charset='UTF-8' />
+  <meta
+    name='viewport'
+    content='width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0'
+  />
+  <meta http-equiv='X-UA-Compatible' content='ie=edge' />
+  <title>测试MiniVue</title>
+</head>
+<body>
+<div id='app'>
+  <div>{{ content }},{{ data }}</div>
+  <div>{{ description }}</div>
+</div>
+<script type='module'>
+  import MiniVue from '../src/main.js'
+
+  window.vue = new MiniVue({
+    el: '#app',
+    data: {
+      content: 'hello world',
+      description: 'this is a description',
+      obj: {
+        a: 1,
+        b: 2,
+      },
+      arr: [{ name: 'lisi', age: 18 }, { name: 'wangwu', age: 20 }],
+    },
+  })
+</script>
+</body>
+</html>
