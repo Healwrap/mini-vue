@@ -1,3 +1,5 @@
+import { renderData } from './render.js'
+
 /**
  * 获取命名空间
  * @param {string} nowNamesapce
@@ -32,6 +34,7 @@ function proxyArrayFunction(vm, func, obj, namespace) {
       let original = arrayProto[func]
       const result = original.apply(arr, args)
       console.log('代理数组方法')
+      renderData(vm, getNamespace(namespace, prop))
       return result
     },
   })
@@ -82,6 +85,7 @@ function constructArrayProxy(vm, arr, namespace) {
 function constructObjectProxy(vm, obj, namespace) {
   let proxyObj = {}
   for (let prop in obj) {
+    // vm下_data的代理
     Object.defineProperty(proxyObj, prop, {
       configurable: true,
       get() {
@@ -91,8 +95,10 @@ function constructObjectProxy(vm, obj, namespace) {
         // 这里需要跟踪依赖
         console.log('===')
         obj[prop] = newValue
+        renderData(vm, getNamespace(namespace, prop))
       },
     })
+    // vm的代理
     Object.defineProperty(vm, prop, {
       configurable: true,
       get() {
@@ -100,6 +106,7 @@ function constructObjectProxy(vm, obj, namespace) {
       },
       set(newValue) {
         proxyObj[prop] = newValue
+        renderData(vm, getNamespace(namespace, prop))
       },
     })
     if (obj[prop] instanceof Object) {

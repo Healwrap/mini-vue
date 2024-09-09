@@ -138,3 +138,13 @@ function renderNode(vm, vnode) {
     }
   }
 }
+
+export function renderData(vm, data) {
+  let vnodes = templateToVNode.get(data)
+  if (vnodes != null) {
+    for (const vnode of vnodes) {
+      renderNode(vm, vnode)
+      console.log(vnode)
+    }
+  }
+}
