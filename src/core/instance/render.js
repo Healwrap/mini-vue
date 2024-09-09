@@ -1,3 +1,5 @@
+import { getValue } from '../../utils/objectUtils.js'
+
 const templateToVNode = new Map()
 const vNodeToTemplate = new Map()
 
@@ -54,14 +56,19 @@ function getTemplateName(template) {
 }
 
 /**
+ *
  * 获取模板对应的数据
  * @param {[]} datas
  * @param {string} template
  */
 function getTemplateData(datas, template) {
   for (const data of datas) {
-
+    let temp = getValue(data, template)
+    if (temp != null) {
+      return temp
+    }
   }
+  return null
 }
 
 /**
@@ -114,13 +121,16 @@ export function renderMixin(MiniVue) {
 function renderNode(vm, vnode) {
   // 是文本节点，进行渲染处理
   if (vnode.nodeType === 3) {
-    let templates = vNodeToTemplate(vnode)
+    let templates = vNodeToTemplate.get(vnode)
     if (templates) {
       let result = vnode.text
       for (const template of templates) {
         let templateData = getTemplateData([vm._data, vnode.env], template)
-        console.log(templateData)
+        if (templateData) {
+          result = result.replace(`{{ ${template} }}`, templateData)
+        }
       }
+      vnode.elem.nodeValue = result
     }
   } else {
     for (const child of vnode.children) {
