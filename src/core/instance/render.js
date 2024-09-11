@@ -49,10 +49,29 @@ function setTemplateToVNode(template, vnode) {
 function getTemplateName(template) {
   let templateName = ''
   const matches = template.match(/{{\s*([\w.]+)\s*}}/)
-  if (matches && matches[1]) {
+  if (matches && matches[1] !== '') {
     templateName = matches[1]
+  } else {
+    templateName = template
   }
   return templateName
+}
+
+/**
+ * 分析属性
+ * @param {MiniVue} vm
+ * @param {VNode} vnode
+ */
+function analysisAttr(vm, vnode) {
+  if (vnode.nodeType !== 1) {
+    return
+  }
+  let attrNames = vnode.elem.getAttributeNames()
+  if (attrNames.indexOf('v-model') > -1) {
+    const template = vnode.elem.getAttribute('v-model')
+    setTemplateToVNode(template, vnode)
+    setVNodeToTemplate(template, vnode)
+  }
 }
 
 /**
@@ -96,6 +115,7 @@ export function prepareRender(vm, vnode) {
   if (vnode.nodeType === 3) {
     analysisTemplateString(vnode)
   }
+  analysisAttr(vm, vnode)
   if (vnode.nodeType === 1) {
     for (const child of vnode.children) {
       prepareRender(vm, child)
@@ -132,6 +152,17 @@ function renderNode(vm, vnode) {
       }
       vnode.elem.nodeValue = result
     }
+    // 如果是输入框，进行处理
+  } else if (vnode.nodeType === 1 && vnode.tag === 'INPUT') {
+    let templates = vNodeToTemplate.get(vnode)
+    if (templates) {
+      for (const template of templates) {
+        let templateData = getTemplateData([vm._data, vnode.env], template)
+        if (templateData) {
+          vnode.elem.value = templateData
+        }
+      }
+    }
   } else {
     for (const child of vnode.children) {
       renderNode(vm, child)
@@ -139,6 +170,11 @@ function renderNode(vm, vnode) {
   }
 }
 
+/**
+ * 渲染数据
+ * @param {MiniVue} vm
+ * @param {string} data
+ */
 export function renderData(vm, data) {
   let vnodes = templateToVNode.get(data)
   if (vnodes != null) {
