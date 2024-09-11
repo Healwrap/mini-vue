@@ -1,5 +1,6 @@
 import VNode from '../vdom/vnode.js'
 import { getTemplateToVNode, getVNodeToTemplate, prepareRender } from './render.js'
+import { vmodel } from '../directives/vmodel.js'
 
 /**
  * 获取节点文本
@@ -22,6 +23,7 @@ function getNodeText(elem) {
  * @return {VNode}
  */
 function constructVNode(vm, elem, parent) {
+  analysisAttr(vm, elem, parent)
   let vnode = null
   let children = []
   let text = getNodeText(elem)
@@ -39,6 +41,21 @@ function constructVNode(vm, elem, parent) {
     }
   }
   return vnode
+}
+
+/**
+ * 分析属性
+ * @param {MiniVue} vm
+ * @param {HTMLElement} elem
+ * @param {VNode} parent
+ */
+function analysisAttr(vm, elem, parent) {
+  if (elem.nodeType === 1) {
+    let attrNames = elem.getAttributeNames()
+    if (attrNames.indexOf('v-model') > -1) {
+      vmodel(vm, elem, elem.getAttribute("v-model"))
+    }
+  }
 }
 
 /**
