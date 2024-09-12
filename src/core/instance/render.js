@@ -145,8 +145,10 @@ function renderNode(vm, vnode) {
     if (templates) {
       let result = vnode.text
       for (const template of templates) {
+        const data = [vm._data, vnode.env]
         let templateData = getTemplateData([vm._data, vnode.env], template)
-        if (templateData) {
+        // debugger
+        if (templateData != null) {
           result = result.replace(`{{ ${template} }}`, templateData)
         }
       }

@@ -32,9 +32,9 @@ function proxyArrayFunction(vm, func, obj, namespace) {
     configurable: true,
     value(...args) {
       let original = arrayProto[func]
-      const result = original.apply(arr, args)
+      const result = original.apply(vm, args) // TODO
       console.log('代理数组方法')
-      renderData(vm, getNamespace(namespace, prop))
+      renderData(vm, getNamespace(namespace, null)) // TODO
       return result
     },
   })
@@ -61,10 +61,11 @@ function constructArrayProxy(vm, arr, namespace) {
     toString() {
       let result = ''
       for (let i = 0; i < arr.length; i++) {
-        if (i !== arr.length - 1) result += arr[i] + ', '
-        else result += arr[i]
+        let temp = JSON.stringify(arr[i])
+        if (i !== arr.length - 1) result += temp + ', '
+        else result += temp
       }
-      return result
+      return `[${result}]`
     },
   }
   proxyArrayFunction.call(vm, vm, 'push', proxyObj, namespace)
@@ -88,6 +89,7 @@ function constructObjectProxy(vm, obj, namespace) {
     // vm下_data的代理
     Object.defineProperty(proxyObj, prop, {
       configurable: true,
+      enumerable: true,
       get() {
         return obj[prop]
       },
@@ -101,6 +103,7 @@ function constructObjectProxy(vm, obj, namespace) {
     // vm的代理
     Object.defineProperty(vm, prop, {
       configurable: true,
+      enumerable: true,
       get() {
         return proxyObj[prop]
       },

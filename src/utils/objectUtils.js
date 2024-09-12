@@ -11,7 +11,7 @@ export function getValue(obj, name) {
   let nameList = name.split('.')
   let temp = obj
   for (let i = 0; i < nameList.length; i++) {
-    if (temp[nameList[i]]) {
+    if (temp[nameList[i]] != null) {
       temp = temp[nameList[i]]
     } else {
       return undefined

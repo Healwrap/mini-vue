@@ -16,6 +16,12 @@
   <div>对象属性：{{ obj.a }}</div>
   <div>数组：{{ arr }}</div>
   <input type='text' v-model='content' />
+  <ul>
+    <li v-for='(item,index) in arr'>
+      序号：{{ index }}，姓名：{{ item.name }}，年龄：{{ item.age }}
+    </li>
+  </ul>
+  <button>增加</button>
 </div>
 <script type='module'>
   import MiniVue from '../src/main.js'
@@ -31,6 +37,14 @@
       },
       arr: [{ name: 'lisi', age: 18 }, { name: 'wangwu', age: 20 }],
     },
+  })
+
+  const btn = document.querySelector('button')
+  btn.addEventListener('click', () => {
+    console.log(vue.arr)
+    console.log(vue.arr.toString())
+    vue._data.arr.push({ name: 'zhangsan', age: 19 })
+    console.log(vue.arr.toString())
   })
 </script>
 </body>
