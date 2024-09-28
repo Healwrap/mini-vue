@@ -112,9 +112,16 @@ export function prepareRender(vm, vnode) {
   if (vnode == null) {
     return
   }
+  // 文本节点
   if (vnode.nodeType === 3) {
     analysisTemplateString(vnode)
   }
+  // 虚拟节点
+  if (vnode.nodeType === 0) {
+    // setTemplateToVNode(vnode.data, vnode)
+    // setVNodeToTemplate(vnode.data, vnode)
+  }
+  // 标签节点
   analysisAttr(vm, vnode)
   if (vnode.nodeType === 1) {
     for (const child of vnode.children) {
@@ -185,4 +192,14 @@ export function renderData(vm, data) {
       console.log(vnode)
     }
   }
+}
+
+export function getVNodeByTemplate(template) {
+  return templateToVNode.get(template)
+}
+
+
+export function clearMap() {
+  templateToVNode.clear()
+  vNodeToTemplate.clear()
 }

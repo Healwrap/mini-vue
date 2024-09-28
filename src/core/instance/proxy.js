@@ -1,4 +1,5 @@
 import { renderData } from './render.js'
+import { rebuild } from './mount.js'
 
 /**
  * 获取命名空间
@@ -32,9 +33,10 @@ function proxyArrayFunction(vm, func, obj, namespace) {
     configurable: true,
     value(...args) {
       let original = arrayProto[func]
-      const result = original.apply(vm, args) // TODO
+      const result = original.apply(vm, args)
       console.log('代理数组方法')
-      renderData(vm, getNamespace(namespace, null)) // TODO
+      rebuild(vm, getNamespace(namespace, ''))
+      renderData(vm, getNamespace(namespace, ''))
       return result
     },
   })
@@ -139,7 +141,8 @@ export function constructProxy(vm, obj, namespace) {
     // 判断为对象
     proxyObj = constructObjectProxy(vm, obj, namespace)
   } else {
-    throw new Error()
+    // 如果是基础类型，直接返回
+    return obj
   }
   return proxyObj
 }
