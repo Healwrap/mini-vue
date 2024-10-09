@@ -70,6 +70,7 @@ function constructArrayProxy(vm, arr, namespace) {
       return `[${result}]`
     },
   }
+  // 代理数组的方法，添加rebuild和renderData
   proxyArrayFunction.call(vm, vm, 'push', proxyObj, namespace)
   proxyArrayFunction.call(vm, vm, 'pop', proxyObj, namespace)
   proxyArrayFunction.call(vm, vm, 'shift', proxyObj, namespace)

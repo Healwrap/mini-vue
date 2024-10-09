@@ -1,3 +1,4 @@
+let number = 1
 /**
  * 虚拟DOM节点
  */
@@ -20,6 +21,6 @@ export default class VNode {
     this.env = {} // 当前节点的环境变量
     this.instructions = null // 存放指令
     this.template = [] // 当前节点涉及的模板
-
+    this.number = number++
   }
 }

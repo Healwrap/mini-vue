@@ -44,7 +44,7 @@ export function setValue(obj, name, value) {
 
 
 /**
- * 合并环境变量
+ * 合并变量
  * @param env1
  * @param env2
  * @return {any[]|{}|*}

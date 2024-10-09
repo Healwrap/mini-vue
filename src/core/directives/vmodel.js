@@ -7,7 +7,7 @@ import { setValue } from '../../utils/objectUtils.js'
  * @param {string} prop
  */
 export function vmodel(vm, elem, prop) {
-  elem.onchange = function(event) {
+  elem.onchange = function() {
     setValue(vm._data, prop, elem.value)
   }
 }

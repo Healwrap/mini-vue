@@ -2,7 +2,7 @@ import VNode from '../vdom/vnode.js'
 import { getValue } from '../../utils/objectUtils.js'
 
 /**
- * 分析局部变量 env
+ * 分析vfor指令的变量 拿到value
  * @param {string} instructions
  * @param {string} value
  * @param {number} index
@@ -30,7 +30,7 @@ function analysisEnv(instructions, value, index) {
 }
 
 /**
- * 分析指令
+ * 分析指令 根据数组生成Dom列表
  * @param {MiniVue} vm
  * @param {string} instructions
  * @param {HTMLElement} elem
@@ -47,10 +47,8 @@ function analysisInstructions(vm, instructions, elem, parent) {
     let tempDom = document.createElement(elem.nodeName)
     tempDom.innerHTML = elem.innerHTML
     let env = analysisEnv(insSet[0], dataSet[i], i)
-    // console.log(env)
-    // console.log(dataSet)
+    // 将env的值放到dom中
     tempDom.setAttribute('env', JSON.stringify(env))
-    // console.log(JSON.parse(JSON.stringify(env)))
     parent.elem.appendChild(tempDom)
     resultSet.push(tempDom)
   }
@@ -67,9 +65,11 @@ function analysisInstructions(vm, instructions, elem, parent) {
 export function vforInit(vm, elem, parent, instructions) {
   let virtualNode = new VNode(elem.nodeName, 0, elem, parent, [], '', getVirtualNodeData(instructions))
   virtualNode.instructions = instructions
+  // 删除原本的元素 即有代码的节点。
   parent.elem.removeChild(elem)
+  // 添加一个空的节点
   parent.elem.appendChild(document.createTextNode(''))
-  let resultSet = analysisInstructions(vm, instructions, elem, parent)
+  analysisInstructions(vm, instructions, elem, parent)
   return virtualNode
 }
 
@@ -79,7 +79,7 @@ export function vforInit(vm, elem, parent, instructions) {
  */
 function getVirtualNodeData(instructions) {
   let insSet = instructions.trim().split(' ')
-  if (insSet.length !== 3 || insSet[1] !== 'in' && insSet[1] !== 'of') {
+  if (insSet.length !== 3 || insSet[1] !== 'in' && insSet[1] !== 'of') { // x in obj || x of obj 两种语法
     throw new Error('v-for指令格式不正确')
   }
   return insSet

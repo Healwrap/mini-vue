@@ -17,7 +17,6 @@ function getNodeText(elem) {
   }
 }
 
-
 /**
  * 构建虚拟节点
  * @param {MiniVue} vm
@@ -36,13 +35,13 @@ function constructVNode(vm, elem, parent) {
     vnode = new VNode(tag, nodeType, elem, parent, children, text, data)
     if (elem.nodeType === 1 && elem.getAttribute('env')) {
       vnode.env = mergeEnv(vnode.env, JSON.parse(elem.getAttribute('env')))
-      console.log(JSON.parse(elem.getAttribute('env')))
     } else {
       vnode.env = mergeEnv(vnode.env, parent ? parent.env : {})
     }
   }
-  let childs = vnode.elem.childNodes
-  for (let i = 0; i < childs.length; i++) {
+  let childs = vnode.nodeType === 0 ? vnode.parent.elem.childNodes : vnode.elem.childNodes
+  let len = vnode.nodeType === 0 ? vnode.parent.elem.childNodes.length : vnode.elem.childNodes.length
+  for (let i = 0; i < len; i++) {
     let childNodes = constructVNode(vm, childs[i], vnode)
     if (childNodes instanceof VNode) {
       vnode.children.push(childNodes)
@@ -76,7 +75,7 @@ function analysisAttr(vm, elem, parent) {
  * @param {Function} MiniVue
  */
 export function initMount(MiniVue) {
-  MiniVue.prototype.$mount = function(el) {
+  MiniVue.prototype.$mount = function (el) {
     let vm = this
     let elem = document.querySelector(el)
     mount(vm, elem)
@@ -91,12 +90,11 @@ export function initMount(MiniVue) {
 export function mount(vm, elem) {
   // 挂载节点
   vm._vnode = constructVNode(vm, elem, null)
-  // 预备渲染（简历渲染索引）
+  // 预备渲染（建立渲染索引）
   prepareRender(vm, vm._vnode)
   console.log(getVNodeToTemplate())
   console.log(getTemplateToVNode())
 }
-
 
 export function rebuild(vm, template) {
   let vnodes = getVNodeByTemplate(template)
@@ -108,5 +106,4 @@ export function rebuild(vm, template) {
     clearMap()
     prepareRender(vm, vm._data)
   }
-
 }
